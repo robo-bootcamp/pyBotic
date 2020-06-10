@@ -1,7 +1,7 @@
 # pyBot
 Impelementations of famous robotics algorithms 
 
-Projects Planned
+## Projects Planned
 
 ### Planners
 
