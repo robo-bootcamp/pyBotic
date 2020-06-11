@@ -20,7 +20,7 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Operating System :: OS Independent',
     ],
-    url='https://github.com/robo-bootcamp/pyBot',
+    url='https://github.com/robo-bootcamp/pyBotic',
     author="Arun Joseph | Gunjan Patil",
     author_email="arunjoseph.eng@gmail.com"
 )
