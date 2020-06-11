@@ -37,7 +37,3 @@ class world:
             renders the envirnment
         """
         raise NotImplementedError("This is an abstract method")
-
-
-def test():
-    return "Hello"
