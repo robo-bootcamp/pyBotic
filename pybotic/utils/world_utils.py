@@ -38,6 +38,3 @@ def load_3d_world_map(file_name):
 if __name__ == '__main__':
     file_name = 'tests/sample_world.txt'
     boundary, obstacles = load_3d_world_map(file_name)
-
-    (boundary)
-    (obstacles)
