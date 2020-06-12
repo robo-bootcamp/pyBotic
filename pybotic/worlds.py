@@ -29,26 +29,30 @@ class World(ABC):
             try:
                 if not isinstance(self.__dict__[name], field_type):
                     current_type = type(self.__dict__[name])
-                    raise ValueError(
-                        f"The field `{name}` was assigned by `{current_type}` instead of `{field_type}`")
+                    err_msg = (f"The field `{name}` was assigned by"
+                               f"`{current_type}` instead of `{field_type}`")
+                    raise ValueError(err_msg)
             except Exception as e:
-                if e == "Subscripted generics cannot be used with class and instance checks":
+                accepted_errors = ("Subscripted generics cannot be used with "
+                                   "class and instance checks")
+                if e == accepted_errors:
                     print(name, field_type, type(self.__dict__[name]))
                     continue
 
         # validate start and goal
         if np.shape(self._start) not in {(3, 1), (3,)}:
-            raise ValueError(f'wrong shape {np.shape(self._start)}, {self._start}')
+            raise ValueError(f'wrong shape {np.shape(self._start)}')
 
         if np.shape(self._goal) not in {(3, 1), (3,)}:
             raise ValueError(f'wrong shape {np.shape(self._goal)}')
 
         if np.shape(self._boundary) not in {(6, 1), (6,)}:
-            raise ValueError(f"wrong boundary shape {np.shape(self._boundary)}")
+            raise ValueError(f"wrong shape {np.shape(self._boundary)}")
 
         for obs_idx in self._obstacles:
-            if np.shape(self._obstacles[obs_idx]) not in {(6, 1), (6,)}:
-                raise ValueError(f"wrong obstacle shape {np.shape(self._obstacles[obs_idx])}")
+            shape_ = np.shape(self._obstacles[obs_idx])
+            if shape_ not in {(6, 1), (6,)}:
+                raise ValueError(f"wrong shape {shape_}")
 
     def get_state(self):
         """
@@ -119,3 +123,14 @@ class Continous3D_Static(World):
     def render(self):
         # TODO: render
         pass
+
+
+if __name__ == '__main__':
+    boundary = np.array([1, 2, 3, 4, 5, 6])
+    obstacles = {'1': np.array([1]*6), '2': np.array([2]*6)}
+    start = np.zeros((3, 1))
+    goal = np.ones((3, 1))
+
+    # create an object
+
+    c = Continous3D_Static(boundary, obstacles, start, goal)
