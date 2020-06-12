@@ -1,4 +1,3 @@
-# this file contains implementations for abstract world class
 from abc import ABC, abstractmethod
 import numpy as np
 from pybotic.utils.world_utils import load_3d_world_map
@@ -28,8 +27,7 @@ class World(ABC):
 
     @abstractmethod
     def update_state(self, robot_action):
-        """from dataclasses import dataclass
-
+        """
             updates the state of the world, given robot action
 
             - updates robot's location/state
@@ -104,7 +102,8 @@ class Continous3D_Static(World):
         for obs_idx in obstacles:
             if np.shape(obstacles[obs_idx]) not in {(6, 1), (6,)}:
                 raise ValueError("wrong obstacle shape")
-            if not all([type(e) in [int, float] for e in obstacles[obs_idx]):
+
+            if not all([type(e) in [int, float] for e in obstacles[obs_idx]]):
                 raise TypeError('all obstables should be dict(int,float)')
 
     @classmethod
@@ -122,12 +121,3 @@ class Continous3D_Static(World):
         if start is None:
             start = np.zeros((3, 1))
         return cls(start, goal, obstacles, boundary)
-
-
-
-
-
-a = (1, 2, 3)
-
-
-all([type(b) == int for b in a])
