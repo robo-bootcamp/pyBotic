@@ -17,15 +17,15 @@ class World(ABC):
     _start: np.ndarray = field(default=None)
     _goal: np.ndarray = field(default=None)
 
-    def __pre_init__(self):
-        print("asgdags")
-
     def __post_init__(self):
         """
             This is used to validate the inputs
+            initializes _robot_pose
         """
         self._robot_pose = self._start
         for (name, field_type) in self.__annotations__.items():
+            if self.__dict__[name] is None:
+                raise ValueError(f"{name} cannot be empty")
             try:
                 if not isinstance(self.__dict__[name], field_type):
                     current_type = type(self.__dict__[name])
@@ -84,6 +84,11 @@ class World(ABC):
         if np.shape(robot_action) not in {(3, 1), (3,)}:
             raise ValueError('wrong shape')
 
+        if not isinstance(self._robot_pose, robot_action):
+            err_string = (f"expected {type(self._robot_pose)}"
+                          f" got {type(robot_action)}")
+            raise TypeError(err_string)
+
         self._robot_pose = robot_action
 
     @abstractmethod
@@ -118,7 +123,7 @@ class Continous3D_Static(World):
         start, goal, obstacles, boundary = load_3d_world_map(f_name)
         if start is None:
             start = np.zeros((3, 1))
-        return cls(start, goal, obstacles, boundary)
+        return cls(boundary, obstacles, start, goal)
 
     def render(self):
         # TODO: render

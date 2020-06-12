@@ -33,8 +33,3 @@ def load_3d_world_map(file_name):
     obstacles = np.array(map_data[block_id][list(colum_names)].tolist())
 
     return boundary, obstacles
-
-
-if __name__ == '__main__':
-    file_name = 'tests/sample_world.txt'
-    boundary, obstacles = load_3d_world_map(file_name)
