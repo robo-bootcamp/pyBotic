@@ -13,7 +13,7 @@ class TestLoad3DWorldMap(unittest.TestCase):
 
     def test_valid_load(self):
         f_name = 'tests/sample_world.txt'
-        boundary, obstacles = load_3d_world_map(f_name)
+        boundary, obstacles, _, _ = load_3d_world_map(f_name)
         boundary_ = np.array([[b'boundary', b'0.0', b'-5.0', b'0.0', b'10.0',
                                b'20.0', b'6.0', b'120.0', b'120.0', b'120.0']],
                              dtype='|S8')
