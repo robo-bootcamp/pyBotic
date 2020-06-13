@@ -26,15 +26,14 @@ class TestContinous3DStatic(unittest.TestCase):
             - get state
 
         """
-
         # valid construction
         self.assertIsInstance(self.c, Continous3D_Static)
 
-        valid_output = {'boundary': np.array([1, 2, 3, 4, 5, 6]),
-                        'obstacles': {'1': np.array([1]*6)},
-                        'start': np.zeros((3, 1)),
-                        'goal': np.ones((3, 1)),
-                        'robot_pose': np.zeros((3, 1))}
+        valid_output = {'boundary': self.boundary,
+                        'obstacles': self.obstacles,
+                        'start': self.start,
+                        'goal': self.goal,
+                        'robot_pose': self.start}
 
         self.rec_check_dict(valid_output, self.c())
 
