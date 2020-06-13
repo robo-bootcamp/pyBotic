@@ -31,5 +31,6 @@ def load_3d_world_map(file_name):
     block_id = map_data['type'] == b'block'
     boundary = np.array(map_data[~block_id][list(colum_names)].tolist())
     obstacles = np.array(map_data[block_id][list(colum_names)].tolist())
-
-    return boundary, obstacles
+    start = np.zeros((3, 1))
+    goal = np.ones((3, 1))
+    return boundary, obstacles, start, goal
