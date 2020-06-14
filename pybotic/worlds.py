@@ -113,3 +113,7 @@ class Continous3D_Static(World):
     def render(self):
         # TODO: render
         pass
+
+
+if __name__ == "__main__":
+    Continous3D_Static()
