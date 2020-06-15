@@ -1,17 +1,21 @@
-# An example environment
-# boundary xmin ymin zmin xmax ymax zmax r g b
-# block xmin ymin zmin xmax ymax zmax r g b
-# (lower left) (upper right) (color)
-boundary 0.0 -5.0 0.0 10.0 20.0 6.0 120 120 120
+# An, example environment
+# boundary: xmin ymin zmin xmax ymax zmax
+# (lower left) (upper right)
+# obstacle: xmin ymin zmin xmax ymax zmax
+# start: x, y, z
+# goal: x, y, z
+# Comment as follows: # rfbve
 
-block  0.0  2.0  0.0 10.0  2.5  1.5 120 120 120
-block  0.0  2.0  4.5 10.0  2.5  6.0 120 120 120
+obstacle: 0.0, 2.0, 0.0, 10.0, 2.5, 1.5
+boundary: 0, -5.0, 0.0, 10.0, 20.0, 1.5
 
-block  0.0  2.0  1.5  3.0  2.5  4.5 120 120 120
-block  7.0  2.0  1.5 10.0  2.5  4.5 120 120 120
+obstacle: 0.0, 2.0, 4.5, 10.0, 2.5, 6.0
 
-block  3.0  0.0  2.4  7.0  0.5  4.5 120 120 120
+obstacle: 7.0, 2.0, 1.5, 10.0, 2.5, 5.0
 
-block 0.0 15.0  0.0 10.0 20.0  1.0 120 120 120
-block 0.0 15.0  1.0 10.0 16.0  3.5 120 120 120
-block 0.0 18.0  4.5 10.0 19.0  6.0 120 120 120
+obstacle: 6.0, 1.0, -0.5, 2.0, -1.2, 0.5
+
+obstacle: 5.0, 1.0, -0.5, 2.0, -1.2, 0.5
+
+start: 0.0, 0.0, 0.0
+goal: 5.0, -3.0, 2.0
