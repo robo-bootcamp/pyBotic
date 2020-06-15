@@ -47,7 +47,7 @@ class geometry(ABC):
             arr (list, tuple): after converting numpy
         """
         if isinstance(arr, np.ndarray):
-            return arr.tolist()
+            return arr.ravel().tolist()
         else:
             return arr
 
