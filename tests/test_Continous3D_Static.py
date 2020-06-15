@@ -6,30 +6,42 @@ import numpy as np
 
 
 class TestContinous3DStatic(unittest.TestCase):
-    """
-        Tester for Continous3D_Static
-        test covered:
-            - valid
-            - file not found
+    """Tester for Continous3D_Static
+
+    test covered:
+        - valid
+        - file not found
     """
 
     def setUp(self):
+        """initializes test object
+
+        eqvilant of __init__()
+
+        sets_up:
+            -boundary (Cuboid)
+            -obstacles (Dict[str,Cuboid])
+            -start (Point3D)
+            -goal (Point3D)
+            -
+        """
         self.boundary = Cuboid.create_from_iter([1, 2, 3, 4, 5, 6])
         self.obstacles = {'1': Cuboid.create_from_iter([1]*6)}
         self.start = Point3D.create_from_iter(np.zeros((3, 1)))
         self.goal = Point3D.create_from_iter(np.ones((3, 1)))
-        self.c = Continous3D_Static(self.boundary, self.obstacles,
-                                    self.start, self.goal)
+        self.cworld = Continous3D_Static(self.boundary, self.obstacles,
+                                         self.start, self.goal)
 
     def test_valid(self):
-        """
-            this is will check all the valid cases
-            - valid construction
-            - get state
+        """Test under valid inputs
+
+        this is will check valid cases
+        - valid construction
+        - get state
 
         """
         # valid construction
-        self.assertIsInstance(self.c, Continous3D_Static)
+        self.assertIsInstance(self.cworld, Continous3D_Static)
 
         valid_output = {'boundary': self.boundary,
                         'obstacles': self.obstacles,
@@ -37,17 +49,28 @@ class TestContinous3DStatic(unittest.TestCase):
                         'goal': self.goal,
                         'robot_pose': self.start}
 
-        self.assertEqual(self.c(), valid_output)
+        self.assertEqual(self.cworld(), valid_output)
 
     def test_empty(self):
+        """Empty check
+
+        Tries to create an object with empty inputs
+        makes sure it triggers TypeError
+        """
         with self.assertRaises(TypeError):
             Continous3D_Static()
 
     def test_update(self):
-        self.c.update_state(self.goal)
+        """Update state check
 
-        self.assertEqual(self.goal, self.c._robot_pose)
+        Make sure that update state works properly
+        """
+        self.cworld.update_state(self.goal)
+        self.assertEqual(self.goal, self.cworld._robot_pose)
 
     def test_render(self):
-        # dummy test since render is pass
-        self.c.render()
+        """test the rendering engine
+
+        Currely a dummy test need to write the renderer first
+        """
+        self.cworld.render()
