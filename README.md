@@ -1,4 +1,4 @@
-# pyBot
+# pyBotic
 Impelementations of famous robotics algorithms 
 
 ## Projects Planned

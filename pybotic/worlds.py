@@ -8,9 +8,10 @@ from pybotic.utils.world_utils import load_3d_world_map
 
 @dataclass
 class World(ABC):
-    """
-        This is an abstract class representing world
-        Never to be directly used in any applications
+    """Abstaract World class
+
+    This is an abstract class representing world
+    Never to be directly used in any applications
     """
     _boundary: np.ndarray = field(default=None)
     _obstacles: Dict[str, np.ndarray] = field(default=None)
@@ -18,9 +19,10 @@ class World(ABC):
     _goal: np.ndarray = field(default=None)
 
     def __post_init__(self):
-        """
-            This is used to validate the inputs
-            initializes _robot_pose
+        """Validate inputs
+
+        This is used to validate the inputs
+        initializes _robot_pose
         """
         self._robot_pose = self._start
 
@@ -40,31 +42,42 @@ class World(ABC):
                 raise ValueError(f"wrong shape {shape_}")
 
     def get_state(self):
-        """
-            returns the state of the world
+        """Get World State
 
-            Returns:
-                A dictionary containg.__annotations__
-                boundary: (numpy.ndarray) boundary of the world
+        returns the state of the world
 
-                start: (numpy.ndarray) start location
-                goal: (numpy.ndarray) goal location
-                robot_location: (numpy.ndarray) location of the
-                    robot
-                Obstacle_state: (numpy.ndarray) state/location of obstacles
+        Returns:
+            A dictionary containg
+
+            boundary: (numpy.ndarray) boundary of the world
+            start: (numpy.ndarray) start location
+            goal: (numpy.ndarray) goal location
+            robot_location: (numpy.ndarray) location of the
+                robot
+            Obstacle_state: (numpy.ndarray) state/location of obstacles
 
         """
         return dict(self.__iter__())
 
     def __call__(self):
+        """map to .get_state()
+
+        make use of __call__ to ease of use
+            __cal__ -> .get_state()
+        """
         return self.get_state()
 
     def update_state(self, robot_action):
-        """
-            currently just pass through
+        """Update the state of the world
 
-            Args:
-                robot_action: (iterable 3d) robot pose
+        Validates the inputs and then forces the _robot_pose
+
+        Args:
+            robot_action: (iterable 3d) robot pose
+
+        Raises:
+            ValueError: if robot_action is of wrong shape
+            TypeError: if robot_action is of wrong type
         """
         if np.shape(robot_action) not in {(3, 1), (3,)}:
             raise ValueError('wrong shape')
@@ -78,32 +91,45 @@ class World(ABC):
 
     @abstractmethod
     def render(self):
-        """
-            renders the envirnment
+        """Renders the world
+
+        renders the world, but currently abstarct
         """
         # can't have pass here for coverage reasons
 
     def __iter__(self):
+        """Support easy unpacking
+
+        This allows better unpacking support
+
+        Yields:
+            name: (str) demangled name
+            content: (any) content associated with name
+        """
         for name in self.__dict__:
             yield name[1:], self.__dict__[name]
 
 
 @dataclass
 class Continous3D_Static(World):
-    """
-        Implementation of a continous 3D world
+    """Continous 3d static world based on World
+
+    This will be the main obect that will keep track of
+    - world state
+    - robot state
+    - provides rendering capability (todo)
     """
 
     @classmethod
-    def create_from_txt_file(cls, f_name):
-        """
+    def create_from_file(cls, f_name: str):
+        """Create object from file
             make use of the given file to load the world config
 
             Args:
                 f_name: (str) path to file
 
-            returns:
-
+            Returns:
+                object: (Continous3D_Static) object of class
         """
         start, goal, obstacles, boundary = load_3d_world_map(f_name)
         if start is None:
@@ -111,5 +137,9 @@ class Continous3D_Static(World):
         return cls(boundary, obstacles, start, goal)
 
     def render(self):
-        # TODO: render
+        """Renders the world
+
+        renders the world, but currently todo
+        """
+        # TODO: write a good 3d render
         pass
