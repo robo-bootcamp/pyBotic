@@ -40,13 +40,12 @@ class World(ABC):
         Returns:
             A dictionary containg
 
-            boundary: (numpy.ndarray) boundary of the world
-            start: (numpy.ndarray) start location
-            goal: (numpy.ndarray) goal location
-            robot_location: (numpy.ndarray) location of the
-                robot
-            Obstacle_state: (numpy.ndarray) state/location of obstacles
+            boundary (numpy.ndarray): boundary of the world
+            Obstacle_state (numpy.ndarray): state/location of obstacles
 
+            start (numpy.ndarray): start location
+            goal (numpy.ndarray): goal location
+            robot_location (numpy.ndarray): location of the robot
         """
         return dict(self.__iter__())
 
@@ -84,8 +83,8 @@ class World(ABC):
         This allows better unpacking support
 
         Yields:
-            name: (str) demangled name
-            content: (any) content associated with name
+            name (str): demangled name
+            content (any): content associated with name
         """
         for name in self.__dict__:
             yield name[1:], self.__dict__[name]
@@ -119,10 +118,10 @@ class Continous3D_Static(World):
         make use of the given file to load the world config
 
         Args:
-            f_name: (str) path to file
+            f_name (str): path to file
 
         Returns:
-            object: (Continous3D_Static) object of class
+            object (Continous3D_Static): object of class
         """
         boundary, obstacles, start, goal = load_3d_world_map(f_name)
         if start is None:
@@ -150,10 +149,6 @@ class Continous3D_Static(World):
         Validates the inputs and then updates robot_pose
 
         Args:
-            robot_action: (iterable 3d) robot pose
-
-        Raises:
-            ValueError: if robot_action is of wrong shape
-            TypeError: if robot_action is of wrong type
+            robot_action (Point3D): robot pose
         """
         self._robot_pose = new_robot_pose
