@@ -16,7 +16,7 @@ class TestContinous3DStatic(unittest.TestCase):
     def setUp(self):
         """initializes test object
 
-        eqvilant of __init__()
+        equivalent of __init__()
 
         sets_up:
             -boundary (Cuboid)
