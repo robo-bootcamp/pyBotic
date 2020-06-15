@@ -51,6 +51,9 @@ class TestContinous3DStatic(unittest.TestCase):
 
         self.assertEqual(self.cworld(), valid_output)
 
+        # support empty obstacles
+        Continous3D_Static(self.boundary, {}, self.start, self.goal)
+
     def test_empty(self):
         """Empty check
 

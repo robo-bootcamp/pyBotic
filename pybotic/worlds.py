@@ -5,20 +5,32 @@ from typing import Dict
 from typeguard import typechecked, check_type
 
 from pybotic.utils.world_utils import load_3d_world_map
-from pybotic.geometry import Point3D, Cuboid
+from pybotic.geometry import Point3D, Cuboid, point, shape
 
 
 @dataclass
 class World(ABC):
-    """Abstaract World class
+    """Abstract World class
 
     This is an abstract class representing world
     Never to be directly used in any applications
+
+    This object should keep track of
+    - world state
+    - robot state
+    - provides rendering capability
+
+    Args:
+        _boundary (shape): shape object marking limits of the world
+        _obstacles (Dict[str, shape]): dictionary of obstacles
+                                        {name:nd shape}
+        _start (point): nd point representing start
+        _goal (point): nd point representing goal/target
     """
-    _boundary: np.ndarray = field(default=None)
-    _obstacles: Dict[str, np.ndarray] = field(default=None)
-    _start: np.ndarray = field(default=None)
-    _goal: np.ndarray = field(default=None)
+    _boundary: shape = field(default=None)
+    _obstacles: Dict[str, shape] = field(default=None)
+    _start: point = field(default=None)
+    _goal: point = field(default=None)
 
     def __post_init__(self):
         """Validate inputs
@@ -124,8 +136,6 @@ class Continous3D_Static(World):
             object (Continous3D_Static): object of class
         """
         boundary, obstacles, start, goal = load_3d_world_map(f_name)
-        if start is None:
-            start = Point3D.create_from_iter(np.zeros((3, 1)))
         if goal is None:
             goal = Point3D.create_from_iter(np.zeros((3, 1)))
         boundary = Cuboid.create_from_iter(boundary)
