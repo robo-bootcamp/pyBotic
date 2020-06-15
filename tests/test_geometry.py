@@ -15,11 +15,11 @@ class TestGeometry(unittest.TestCase):
     This class will be used to define and test all features of
     geometry objects
 
-    please look at induvidual tests to see all features tested
+    please look at individual tests to see all features tested
     """
 
     def test_abstract_geometry(self):
-        """Abstrct object creation test
+        """Abstract object creation test
 
         make sure that obj of geometry can't be created
         when trying to create an abstract object it should
@@ -31,7 +31,7 @@ class TestGeometry(unittest.TestCase):
     def test_valid_point2d(self):
         """Test Point2D behavior when created using valid inputs
 
-        fucntion will test all behaviors of Point2D object
+        function will test all behaviors of Point2D object
         when created with valid inputs
         """
         # multiple valid inputs
@@ -51,7 +51,7 @@ class TestGeometry(unittest.TestCase):
     def test_rectangles(self):
         """Test Rectangle behavior when created using valid inputs
 
-        fucntion will test all behaviors of Point3D object
+        function will test all behaviors of Rectangle object
         when created with valid inputs
         """
         # multiple valid inputs
@@ -70,7 +70,7 @@ class TestGeometry(unittest.TestCase):
     def test_cuboid(self):
         """Test Cuboid behavior when created using valid inputs
 
-        fucntion will test all behaviors of Point3D object
+        function will test all behaviors of Cuboid object
         when created with valid inputs
         """
         # multiple valid inputs
@@ -91,11 +91,11 @@ class TestGeometry(unittest.TestCase):
     def valid_functionality_points(self, class_method, test_inputs):
         """Set of tests to run to verify behavior to valid inputs
 
-        This is a funciton the will be used by other tests to
+        This is a function that will be used by other tests to
         verify behavior of point objects under valid inputs
 
 
-        proper funcitonality of geometry object
+        proper functionality of geometry object
         - create using (x,y,...)
         - create from tuple
         - create from list
@@ -105,7 +105,7 @@ class TestGeometry(unittest.TestCase):
         # direct init
         objects = [class_method(*input_) for input_ in test_inputs]
 
-        # test unpacking works propely
+        # test unpacking works properly
         for point, inp in zip(objects, test_inputs):
             self.assertEqual(tuple(point), inp)
 
@@ -113,7 +113,7 @@ class TestGeometry(unittest.TestCase):
         objects = [class_method.create_from_iter(input_)
                    for input_ in test_inputs]
 
-        # test unpacking works propely
+        # test unpacking works properly
         for point, inp in zip(objects, test_inputs):
             self.assertEqual(tuple(point), inp)
 
@@ -121,7 +121,7 @@ class TestGeometry(unittest.TestCase):
         objects = [class_method.create_from_iter(list(input_))
                    for input_ in test_inputs]
 
-        # test unpacking works propely
+        # test unpacking works properly
         for point, inp in zip(objects, test_inputs):
             self.assertEqual(tuple(point), inp)
 
@@ -129,6 +129,6 @@ class TestGeometry(unittest.TestCase):
         objects = [class_method.create_from_iter(np.array(input_))
                    for input_ in test_inputs]
 
-        # test unpacking works propely
+        # test unpacking works properly
         for point, inp in zip(objects, test_inputs):
             self.assertEqual(tuple(point), inp)
