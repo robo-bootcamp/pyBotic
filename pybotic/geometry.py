@@ -5,14 +5,34 @@ from typeguard import typechecked, check_type
 import numpy as np
 
 
+@dataclass
 class geometry(ABC):
+    """
+        This is actually an abstract class
+        not to be used
+    """
+
+    def __init__(self):
+        """
+            Need to explicitly rewrite since @dataclass overrides ABC
+        """
+        raise NotImplementedError("this is abstaract")
+
     def __post_init__(self):
+        """
+            Enforce Strcit Type check for all geometry objects
+        """
         for (name, field_type) in self.__annotations__.items():
             check_type(argname=name, value=self.__dict__[name],
                        expected_type=field_type)
 
     @staticmethod
     def convert_type(arr):
+        """
+            support:
+                np.int* -> int
+                np.float* -> float
+        """
         if isinstance(arr, np.ndarray):
             return arr.tolist()
         else:
@@ -21,7 +41,7 @@ class geometry(ABC):
     @classmethod
     def create_from_iter(cls, arr):
         """
-        Creates the class after unpacking and converting iterables
+            Creates the class after unpacking and converting iterables
         """
         return cls(*cls.convert_type(arr))
 
@@ -29,21 +49,41 @@ class geometry(ABC):
         yield from astuple(self)
 
 
+@dataclass
+class point(geometry):
+    """ point object
+
+    This will be the parent class of all point objects
+    will be used for meta typing and testing moslty
+    """
+    pass
+
+
+@dataclass
+class shape(geometry):
+    """ shape object
+
+    This will be the parent for all nd shape objects
+    will be used to metatyping and testing
+    """
+    pass
+
+
 @dataclass(frozen=True, unsafe_hash=True)
-class Point3D(geometry):
+class Point3D(point):
     x: Union[float, int]
     y: Union[float, int]
     z: Union[float, int]
 
 
 @dataclass(frozen=True, unsafe_hash=True)
-class Point2D(geometry):
+class Point2D(point):
     x: Union[float, int]
     y: Union[float, int]
 
 
 @dataclass(frozen=True, unsafe_hash=True)
-class Cuboid(geometry):
+class Cuboid(shape):
     x_min: Union[float, int]
     y_min: Union[float, int]
     z_min: Union[float, int]
@@ -58,7 +98,7 @@ class Cuboid(geometry):
 
 
 @dataclass(frozen=True, unsafe_hash=True)
-class Rectangle(geometry):
+class Rectangle(shape):
     x_min: Union[float, int]
     y_min: Union[float, int]
     x_max: Union[float, int]
