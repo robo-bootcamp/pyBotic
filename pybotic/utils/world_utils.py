@@ -63,6 +63,7 @@ def load_3d_map_from_txt(file_name):
         for i, line in enumerate(f.readlines()):
             sl = re.split(': |, |\n| |,', line)[:-1]
             word = sl[0]
+            # ignoring comments and empty lines
             if word == "#" or not word:
                 continue
             array = str_conversion(sl[1:])
@@ -79,17 +80,22 @@ def load_3d_map_from_txt(file_name):
             elif word == "obstacle":
                 obstacle = tuple(array)
                 key = "obstacles"
+                # to check and warn for repeating obstacles
                 if obstacle in obstacles:
-                    warnings.warn(f"Repeating obstacle {array}, if not"
-                                  f" expected, remove them", RuntimeWarning)
+                    warnings.warn(f"Repeating obstacle {array}")
+                # check if "obstacles" present in dictionary,
+                # keep track of number of obstacles added to dict,
+                # add obstacle name accordingly
                 if key not in key_words:
                     key_words[key] = {word+'_0': array}
+                # keep track of number of obstacles added to dict,
+                # add obstacle name accordingly
                 elif key in key_words:
                     key_words[key][word+'_'+str(len(key_words[key]))] = array
                 obstacles.add(tuple(array))
             # taking care of invalid key words
             else:
-                raise ValueError("Invalid key word, not in "
+                raise ValueError(f"Invalid key {word}, not in "
                                  "(boundary, obstacles, start, goal)")
 
     # validating boundary, obstacles, start, goal
@@ -119,32 +125,34 @@ def validate_output(key_words):
     Warnings:
         RuntimeWarning: if start location is not given
     """
-    if 'boundary' not in key_words and 'goal' not in key_words:
-        raise ValueError("boundary and goal not specified in the file")
     if 'boundary' not in key_words:
         raise ValueError("boundary not specified in the file")
-    if 'goal' not in key_words:
-        raise ValueError("goal not specified in the file")
 
     for key, val in key_words.items():
         if key == 'boundary':
             if len(val) != 6:
-                raise ValueError(f"Invalid {key} value, has {len(val)} items")
+                raise ValueError(f"Invalid {key} value, has {len(val)} items,"
+                                 " expected 6")
         if key == 'start' or key == 'goal':
             if len(val) != 3:
-                raise ValueError(f"Invalid {key} value, has {len(val)} items")
+                raise ValueError(f"Invalid {key} value, has {len(val)} items",
+                                 " expected 3")
 
     if "start" not in key_words:
-        warnings.warn("start loc not given,assuming (0, 0, 0)", RuntimeWarning)
+        warnings.warn("start loc not given,assuming (0, 0, 0)")
         key_words["start"] = np.zeros((3))
 
+    if "goal" not in key_words:
+        key_words["goal"] = None
+
     if "obstacles" not in key_words:
-        key_words["obstacles"] = None
+        key_words["obstacles"] = {}
     else:
         for i, (obs, val) in enumerate(key_words["obstacles"].items()):
             if len(val) != 6:
                 raise ValueError(f"Invalid obstacle value,"
-                                 f" has {len(val)} items")
+                                 f" has {len(val)} items, "
+                                 f" expected 6")
 
     return key_words
 
