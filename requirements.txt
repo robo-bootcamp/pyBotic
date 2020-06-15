@@ -1,3 +1,5 @@
 numpy
 matplotlib
+dataclasses
+typeguard
 pytest
