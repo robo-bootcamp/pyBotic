@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 import numpy as np
 from typing import Dict
 
-from pybotic.utils.world_utils import load_3d_world_map
+from pybotic.utils.world_utils import load_3d_map_from_file
 
 
 @dataclass
@@ -105,7 +105,7 @@ class Continous3D_Static(World):
             returns:
 
         """
-        start, goal, obstacles, boundary = load_3d_world_map(f_name)
+        start, goal, obstacles, boundary = load_3d_map_from_file(f_name)
         if start is None:
             start = np.zeros((3, 1))
         return cls(boundary, obstacles, start, goal)

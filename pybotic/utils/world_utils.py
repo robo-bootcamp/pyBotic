@@ -4,7 +4,7 @@ import warnings
 import numpy as np
 
 
-def load_3D_map_from_file(file_name):
+def load_3d_map_from_file(file_name):
     """map loader from file
 
     given path to file, load 3D world map
@@ -27,15 +27,16 @@ def load_3D_map_from_file(file_name):
 
     # Check format
     file_ext = os.path.splitext(file_name)[-1]
+    print(file_ext)
 
-    if file_ext not in ['txt']:
+    if file_ext not in ['.txt']:
         raise NotImplementedError("File format is not supported,\
                                    give .txt file")
 
-    return load_3D_map_from_txt(file_name)
+    return load_3d_map_from_txt(file_name)
 
 
-def load_3D_map_from_txt(file_name):
+def load_3d_map_from_txt(file_name):
     """map loader from text file
 
     given path to txt file, load 3D world map
@@ -163,13 +164,3 @@ def str_conversion(arr):
         ValueError: if elements like str/empty are not convertible to float
     """
     return np.array(arr).astype(np.float)
-
-
-if __name__ == "__main__":
-    file_name = "/home/gunjan/projects/pyBotic/tests/new_world.txt"
-
-    b, o, s, g = load_3D_map_from_txt(file_name)
-    print("b", b)
-    print("o", o)
-    print("s", s)
-    print("g", g)
