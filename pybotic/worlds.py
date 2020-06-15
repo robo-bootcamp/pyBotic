@@ -2,8 +2,10 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 import numpy as np
 from typing import Dict
+from typeguard import typechecked, check_type
 
 from pybotic.utils.world_utils import load_3d_world_map
+from pybotic.geometry import Point3D, Cuboid
 
 
 @dataclass
@@ -26,20 +28,9 @@ class World(ABC):
         """
         self._robot_pose = self._start
 
-        # validate start and goal
-        if np.shape(self._start) not in {(3, 1), (3,)}:
-            raise ValueError(f'wrong shape {np.shape(self._start)}')
-
-        if np.shape(self._goal) not in {(3, 1), (3,)}:
-            raise ValueError(f'wrong shape {np.shape(self._goal)}')
-
-        if np.shape(self._boundary) not in {(6, 1), (6,)}:
-            raise ValueError(f"wrong shape {np.shape(self._boundary)}")
-
-        for obs_idx in self._obstacles:
-            shape_ = np.shape(self._obstacles[obs_idx])
-            if shape_ not in {(6, 1), (6,)}:
-                raise ValueError(f"wrong shape {shape_}")
+        for (name, field_type) in self.__annotations__.items():
+            check_type(argname=name, value=self.__dict__[name],
+                       expected_type=field_type)
 
     def get_state(self):
         """Get World State
@@ -118,22 +109,40 @@ class Continous3D_Static(World):
     - world state
     - robot state
     - provides rendering capability (todo)
+
+    Args:
+        _boundary (Cuboid): Cuboid marking limits of the world
+        _obstacles (Dict[str, Cuboid]): dictionary of obstacles
+                                        {name:Cuboid}
+        _start (Point3D): 3D point representing start
+        _goal (Point3D): 3d point representing goal/target
     """
+    _boundary: Cuboid
+    _obstacles: Dict[str, Cuboid]
+    _start: Point3D
+    _goal: Point3D
 
     @classmethod
     def create_from_file(cls, f_name: str):
         """Create object from file
-            make use of the given file to load the world config
 
-            Args:
-                f_name: (str) path to file
+        make use of the given file to load the world config
 
-            Returns:
-                object: (Continous3D_Static) object of class
+        Args:
+            f_name: (str) path to file
+
+        Returns:
+            object: (Continous3D_Static) object of class
         """
-        start, goal, obstacles, boundary = load_3d_world_map(f_name)
+        boundary, obstacles, start, goal = load_3d_world_map(f_name)
         if start is None:
-            start = np.zeros((3, 1))
+            start = Point3D.create_from_iter(np.zeros((3, 1)))
+        if goal is None:
+            goal = Point3D.create_from_iter(np.zeros((3, 1)))
+        boundary = Cuboid.create_from_iter(boundary)
+        for obstacle in obstacles:
+            obstacles[obstacle] = Cuboid.create_from_iter(obstacles[obstacle])
+
         return cls(boundary, obstacles, start, goal)
 
     def render(self):
