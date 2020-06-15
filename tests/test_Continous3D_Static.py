@@ -79,5 +79,6 @@ class TestContinous3DStatic(unittest.TestCase):
         """
         self.cworld.render()
 
+    # tests valid file loading
     def test_load_3d_map_from_file(self):
         Continous3D_Static.create_from_file(self.file_path+'sample_world.txt')
