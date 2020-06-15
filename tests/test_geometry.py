@@ -41,7 +41,7 @@ class TestGeometry(unittest.TestCase):
     def test_valid_point3d(self):
         """Test Point3D behavior when created using valid inputs
 
-        fucntion will test all behaviors of Point3D object
+        function will test all behaviors of Point3D object
         when created with valid inputs
         """
         # multiple valid inputs
