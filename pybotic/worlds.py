@@ -58,27 +58,17 @@ class World(ABC):
         """
         return self.get_state()
 
-    def update_state(self, robot_action):
+    @abstractmethod
+    def update_state(self, new_robot_pose):
         """Update the state of the world
 
-        Validates the inputs and then forces the _robot_pose
-
         Args:
-            robot_action: (iterable 3d) robot pose
+            new_robot_pose (any): new robot pose
 
         Raises:
-            ValueError: if robot_action is of wrong shape
-            TypeError: if robot_action is of wrong type
+            NotImplementedError: always
         """
-        if np.shape(robot_action) not in {(3, 1), (3,)}:
-            raise ValueError('wrong shape')
-
-        if not isinstance(robot_action, type(self._robot_pose)):
-            err_string = (f"expected {type(self._robot_pose)}"
-                          f" got {type(robot_action)}")
-            raise TypeError(err_string)
-
-        self._robot_pose = robot_action
+        raise NotImplementedError("abstractmethod")
 
     @abstractmethod
     def render(self):
@@ -152,3 +142,18 @@ class Continous3D_Static(World):
         """
         # TODO: write a good 3d render
         pass
+
+    @typechecked
+    def update_state(self, new_robot_pose: Point3D) -> None:
+        """Update the state of the world
+
+        Validates the inputs and then updates robot_pose
+
+        Args:
+            robot_action: (iterable 3d) robot pose
+
+        Raises:
+            ValueError: if robot_action is of wrong shape
+            TypeError: if robot_action is of wrong type
+        """
+        self._robot_pose = new_robot_pose

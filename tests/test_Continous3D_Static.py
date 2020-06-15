@@ -37,17 +37,8 @@ class TestContinous3DStatic(unittest.TestCase):
                         'goal': self.goal,
                         'robot_pose': self.start}
 
+        self.assertEqual(self.c(), valid_output)
+
     def test_empty(self):
         with self.assertRaises(TypeError):
             Continous3D_Static()
-
-    def check_dict(self, a, b):
-        # check keys
-        assert a.keys() == b.keys()
-
-        # ensure that values are same
-        for key in a.keys():
-            if isinstance(a[key], dict):
-                self.check_dict(a[key], b[key])
-                continue
-            assert self.assertEqual(a[key], b[key])
