@@ -1,0 +1,23 @@
+# An, example environment
+# boundary: xmin ymin zmin xmax ymax zmax
+# (lower left) (upper right)
+# obstacle: xmin ymin zmin xmax ymax zmax
+# start: x, y, z
+# goal: x, y, z
+# Comment as follows: # rfbve
+
+obstacle: 0.0, 2.0, 0.0, 10.0, 2.5, 1.5
+boundary: 0, -5.0, 0.0, 10.0, 20.0, 1.5
+
+obstacle: 0.0, 2.0, 4.5, 10.0, 2.5, 6.0
+
+obstacle: 7.0, 2.0, 1.5, 10.0, 2.5, 5.0
+
+obstacle: 6.0, 1.0, -0.5, 2.0, -1.2, 0.5
+
+obstacle: 0.0, 2.0, 4.5, 10.0, 2.5
+
+obstacle: 5.0, 1.0, -0.5, 2.0, -1.2, 0.5
+
+start: 0.0, 0.0, 0.0
+goal: 5.0, -3.0, 2.0
