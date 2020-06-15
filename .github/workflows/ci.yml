@@ -12,7 +12,8 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-
+  runs-on: ubuntu-latest
+  steps:
   - name: Codecov
     uses: codecov/codecov-action@v1.0.7
     with:
