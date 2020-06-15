@@ -1,23 +1,26 @@
-import numpy as np
 import os
 import re
+import warnings
+import numpy as np
 
 
 def load_3D_map_from_file(file_name):
-    """
-        given path to file, load 3D world map
+    """map loader from file
 
-        Args:
-            file_name: (str) Path to 3D world map data
+    given path to file, load 3D world map
 
-        Returns:
-            boundary: (numpy.ndarray) physical limits of the world
-            obstacles: (numpy.ndarray) physical bounds of obstacles
-            start: (numpy.ndarray) start location of robot
-            goal: (numpy.ndarray) goal location
+    Args:
+        file_name (str): Path to 3D world map data
 
-        Raises:
-            FileNotFoundError: if file_name is not a valid file
+    Returns:
+        boundary (numpy.ndarray, shape=(6,)): physical limits of the world
+        obstacles (numpy.ndarray, shape=(6,)): physical bounds of obstacles
+        start (numpy.ndarray, shape=3,)): start location
+        goal (numpy.ndarray, shape=(3,)): goal location
+
+    Raises:
+        FileNotFoundError: if file_name is not a valid file
+        NotImplementedError: if file format is not supported
     """
     if not os.path.isfile(file_name):
         raise FileNotFoundError("No such file found")
@@ -25,157 +28,148 @@ def load_3D_map_from_file(file_name):
     # Check format
     file_ext = os.path.splitext(file_name)[-1]
 
-    if file_ext not in ['txt', 'json']:
+    if file_ext not in ['txt']:
         raise NotImplementedError("File format is not supported,\
-                                   give txt/json file")
+                                   give .txt file")
 
-    if file_ext == 'txt':
-        return load_3D_map_from_txt(file_name)
-    elif file_ext == 'json':
-        return load_3D_map_from_json(file_name)
+    return load_3D_map_from_txt(file_name)
 
 
 def load_3D_map_from_txt(file_name):
-    """
-        given path to txt file, load 3D world map
+    """map loader from text file
 
-        Args:
-            file_name: (str) Path to .txt file
+    given path to txt file, load 3D world map
 
-        Returns:
-            boundary: (numpy.ndarray) physical limits of the world
-            obstacles:(numpy.ndarray) physical bounds of obstacles
-            start: (numpy.ndarray) start location of robot
-            goal: (numpy.ndarray) goal location
+    Args:
+        file_name (str): Path to .txt file
+
+    Returns:
+        boundary (numpy.ndarray, shape=(6,)): physical limits of the world
+        obstacles (numpy.ndarray, shape=(6,)): physical bounds of obstacles
+        start (numpy.ndarray, shape=3,)): start location
+        goal (numpy.ndarray, shape=(3,)): goal location
+
+    Raises:
+
     """
-    # Key words of interest, to check for repeating arguments
-    key_words = {'boundary': 0, 'start': 0, 'goal': 0}
-    key_set = set()
-    # To create a dictionary of unique obstacles
-    obstacles = {}
+    # Key words dictionary for boundary, start, goal,
+    # to error out for repeating arguments
+    key_words = {}
+    # Set of obstacles to warn for repeating obstacle values
+    obstacles = set()
     # Read all lines from file
     with open(file_name) as f:
         for i, line in enumerate(f.readlines()):
             sl = re.split(': |, |\n| |,', line)[:-1]
-            if sl[0] == "#" or not sl[0]:
+            word = sl[0]
+            if word == "#" or not word:
                 continue
-            print("sl:", sl)
             array = str_conversion(sl[1:])
-            print("array:", array)
+            # taking care of invalid statements
             if len(array) == 0:
-                raise SyntaxError("Invalid statement \"{}\"".format(sl[0]))
-            if sl[0] in key_words:
-                if sl[0] not in key_set:
-                    key_set.add(sl[0])
-                    key_words[sl[0]] = str_conversion(sl[1:])
-                elif sl[0] in key_set:
-                    raise ValueError("File has mutiple {} argument".format(sl[0]))
+                raise SyntaxError("Invalid statement \"{}\"".format(word))
+            # taking care of boundary, start, goal and their repetitions
+            if word in ["boundary", "start", "goal"]:
+                if word not in key_words:
+                    key_words[word] = str_conversion(array)
+                else:
+                    raise ValueError(f"File has mutiple {word} keyword")
+            # taking care of obstacles
+            elif word == "obstacle":
+                obstacle = tuple(array)
+                key = "obstacles"
+                if obstacle in obstacles:
+                    warnings.warn(f"Repeating obstacle {array}, if not"
+                                  f" expected, remove them", RuntimeWarning)
+                if key not in key_words:
+                    key_words[key] = {word+'_0': array}
+                elif key in key_words:
+                    key_words[key][word+'_'+str(len(key_words[key]))] = array
+                obstacles.add(tuple(array))
+            # taking care of invalid key words
+            else:
+                raise ValueError("Invalid key word, not in "
+                                 "(boundary, obstacles, start, goal)")
+
+    # validating boundary, obstacles, start, goal
+    key_words = validate_output(key_words)
+
+    return (key_words['boundary'], key_words["obstacles"],
+            key_words['start'], key_words['goal'])
 
 
-    validate_output(key_set, key_words)
-    obstacles = get_obstacles_dict(obstacles)
+def validate_output(key_words):
+    """validating boundary, obstacles, start, goal
 
-    #return boundary, obstacles, start, goal
+    given a dictionary of boundary, obstacles, start, goal with
+    respective arrays, return validated dictionary
+    for existence and array shapes
 
+    Args:
+        key_words (dict{str: numpy.ndarray}): dict of key words to numpy arrays
 
-def validate_output(key_set, key_words):
-    if 'boundary' not in key_set and 'goal' not in key_set:
+    Returns:
+        same or updated dictionary
+
+    Raises:
+        ValueError: if boundary, goal or both not found
+        ValueError: if required lengths do not match
+
+    Warnings:
+        RuntimeWarning: if start location is not given
+    """
+    if 'boundary' not in key_words and 'goal' not in key_words:
         raise ValueError("boundary and goal not specified in the file")
-    if 'boundary' not in key_set:
+    if 'boundary' not in key_words:
         raise ValueError("boundary not specified in the file")
-    if 'goal' not in key_set:
+    if 'goal' not in key_words:
         raise ValueError("goal not specified in the file")
 
     for key, val in key_words.items():
         if key == 'boundary':
             if len(val) != 6:
-                raise ValueError("Invalid {} argument has {} items".format(key, len(val)))
+                raise ValueError(f"Invalid {key} value, has {len(val)} items")
         if key == 'start' or key == 'goal':
             if len(val) != 3:
-                raise ValueError("Invalid {} argument".format(key))
+                raise ValueError(f"Invalid {key} value, has {len(val)} items")
+
+    if "start" not in key_words:
+        warnings.warn("start loc not given,assuming (0, 0, 0)", RuntimeWarning)
+        key_words["start"] = np.zeros((3))
+
+    if "obstacles" not in key_words:
+        key_words["obstacles"] = None
+    else:
+        for i, (obs, val) in enumerate(key_words["obstacles"].items()):
+            if len(val) != 6:
+                raise ValueError(f"Invalid obstacle value,"
+                                 f" has {len(val)} items")
+
+    return key_words
 
 
 def str_conversion(arr):
+    """convert list of str to numpy array
+
+    Given a list of strings, convert it to numpy array of float
+
+    Args:
+        arr (list[str]): List of str to be converted
+
+    Returns:
+        converted numpy.ndarray[float]
+
+    Raises:
+        ValueError: if elements like str/empty are not convertible to float
     """
-        Given a list of strings, convert it to numpy array of int/float
-
-        Args:
-            arr: (list[str]) List of str to be converted
-
-        Returns:
-            numpy.ndarray[int] or numpy.ndarray[float]
-
-        Raises:
-            ValueError if any element is not convertible to int/float
-    """
-    try:
-        return np.array(arr).astype(np.int)
-    except ValueError:
-        return np.array(arr).astype(np.float)
-
-
-
-def get_obstacles_dict(arr):
-    """
-        Given a set of obstacles, return dictionary of obstacles
-
-        Args:
-            arr: (set[tuple[int/float]]) set of obstacles
-
-        Returns:
-            dict{str: numpy.ndarray[int] or numpy.ndarray[float]}
-    """
-    obstacles = {}
-    for i, obs in enumerate(arr):
-        obstacles['obstacle_'+str(i+1)] = np.array(obs)
-    return obstacles
-
-
-def validate_inputs(key_words):
-    """
-        Given dictionary of key words, validate it for non repetitions
-
-        Args:
-            key_words: (dict[str:int]) dictionary of key words
-
-        Returns:
-            None
-
-        Raises:
-            ValueError if any of the key words is written more than once
-            in the file
-
-    """
-    for key, val in key_words.items():
-        if key in ['boundary', 'start', 'goal']:
-            if val > 1:
-                raise ValueError("File has mutiple {} argument".format(key))
-
-
-
-def load_3D_map_from_json(file_name):
-    """
-        given path to json file, load 3D world map
-
-        Args:
-            fname: [str] Path to .json file
-
-        Returns:
-            boundary: [numpy.ndarray] physical limits of the world
-            obstacles: [numpy.ndarray] physical bounds of obstacles
-            start: [numpy.ndarray] start location of robot
-            goal: [numpy.ndarray] goal location
-    """
-    raise NotImplementedError
+    return np.array(arr).astype(np.float)
 
 
 if __name__ == "__main__":
     file_name = "/home/gunjan/projects/pyBotic/tests/new_world.txt"
 
-    load_3D_map_from_txt(file_name)
-    """
+    b, o, s, g = load_3D_map_from_txt(file_name)
     print("b", b)
     print("o", o)
     print("s", s)
     print("g", g)
-    """
