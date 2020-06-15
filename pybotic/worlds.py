@@ -136,9 +136,11 @@ class Continous3D_Static(World):
             object (Continous3D_Static): object of class
         """
         boundary, obstacles, start, goal = load_3d_map_from_file(f_name)
-        if goal is None:
-            goal = Point3D.create_from_iter(np.zeros((3, 1)))
+
+        goal = Point3D.create_from_iter(np.zeros((3, 1))
+                                        if goal is None else goal)
         boundary = Cuboid.create_from_iter(boundary)
+        start = Point3D.create_from_iter(start)
         for obstacle in obstacles:
             obstacles[obstacle] = Cuboid.create_from_iter(obstacles[obstacle])
 

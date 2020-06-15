@@ -37,6 +37,12 @@ jobs:
     - name: Test with pytest and coverage
       run: |
         python setup.py develop
-        pip install coverage
-        coverage run -m pytest -v
-        coverage report
+        pip install codecov pytest-cov
+        pytest --cov=pybotic/ --cov-report=xml
+    - name: Codecov
+      uses: codecov/codecov-action@v1.0.7
+      with:
+        # Specify whether or not CI build should fail if Codecov runs into an error during upload
+        fail_ci_if_error: true
+
+

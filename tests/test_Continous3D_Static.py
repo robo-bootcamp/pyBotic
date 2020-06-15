@@ -31,6 +31,7 @@ class TestContinous3DStatic(unittest.TestCase):
         self.goal = Point3D.create_from_iter(np.ones((3, 1)))
         self.cworld = Continous3D_Static(self.boundary, self.obstacles,
                                          self.start, self.goal)
+        self.file_path = 'tests/map_files/'
 
     def test_valid(self):
         """Test under valid inputs
@@ -77,3 +78,7 @@ class TestContinous3DStatic(unittest.TestCase):
         Currely a dummy test need to write the renderer first
         """
         self.cworld.render()
+
+    # tests valid file loading
+    def test_load_3d_map_from_file(self):
+        Continous3D_Static.create_from_file(self.file_path+'sample_world.txt')

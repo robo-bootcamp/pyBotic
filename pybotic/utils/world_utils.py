@@ -95,8 +95,8 @@ def load_3d_map_from_txt(file_name):
                 obstacles.add(tuple(array))
             # taking care of invalid key words
             else:
-                raise ValueError(f"Invalid key {word}, not in "
-                                 "(boundary, obstacles, start, goal)")
+                raise SyntaxError(f"Invalid key {word}, not in "
+                                  "(boundary, obstacles, start, goal)")
 
     # validating boundary, obstacles, start, goal
     key_words = validate_output(key_words)
@@ -126,7 +126,7 @@ def validate_output(key_words):
         RuntimeWarning: if start location is not given
     """
     if 'boundary' not in key_words:
-        raise ValueError("boundary not specified in the file")
+        raise KeyError("boundary not specified in the file")
 
     for key, val in key_words.items():
         if key == 'boundary':
@@ -139,13 +139,15 @@ def validate_output(key_words):
                                  " expected 3")
 
     if "start" not in key_words:
-        warnings.warn("start loc not given,assuming (0, 0, 0)")
+        warnings.warn("start not given,assuming (0, 0, 0)")
         key_words["start"] = np.zeros((3))
 
     if "goal" not in key_words:
+        warnings.warn("goal not given, assuming 'None'")
         key_words["goal"] = None
 
     if "obstacles" not in key_words:
+        warnings.warn("no obstacles found")
         key_words["obstacles"] = {}
     else:
         for i, (obs, val) in enumerate(key_words["obstacles"].items()):
