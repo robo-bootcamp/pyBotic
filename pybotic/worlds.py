@@ -119,9 +119,9 @@ class Continous3D_Static(World):
         _goal (Point3D): 3d point representing goal/target
     """
     _boundary: Cuboid
-    _obstacles: Dict[str, Cuboid]
-    _start: Point3D
-    _goal: Point3D
+    _obstacles: Dict[str, Cuboid] = field(default_factory={})
+    _start: Point3D = field(default_factory=Point3D(0, 0, 0))
+    _goal: Point3D = field(default_factory=None)
 
     @classmethod
     def create_from_file(cls, f_name: str):
