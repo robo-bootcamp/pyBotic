@@ -25,7 +25,7 @@ class geometry(ABC):
     def __post_init__(self):
         """Validation helper
 
-        Enforce Strcit Type check for all geometry objects
+        Enforce Strict Type check for all geometry objects
         """
         for (name, field_type) in self.__annotations__.items():
             check_type(argname=name, value=self.__dict__[name],
