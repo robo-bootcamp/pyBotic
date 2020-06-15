@@ -53,7 +53,7 @@ class World(ABC):
         """map to .get_state()
 
         make use of __call__ to ease of use
-            __cal__ -> .get_state()
+            __call__ -> .get_state()
         """
         return self.get_state()
 
@@ -94,7 +94,7 @@ class World(ABC):
 class Continous3D_Static(World):
     """Continous 3d static world based on World
 
-    This will be the main obect that will keep track of
+    This will be the main object that will keep track of
     - world state
     - robot state
     - provides rendering capability (todo)
