@@ -42,3 +42,12 @@ class TestContinous3DStatic(unittest.TestCase):
     def test_empty(self):
         with self.assertRaises(TypeError):
             Continous3D_Static()
+
+    def test_update(self):
+        self.c.update_state(self.goal)
+
+        self.assertEqual(self.goal, self.c._robot_pose)
+
+    def test_render(self):
+        # dummy test since render is pass
+        self.c.render()

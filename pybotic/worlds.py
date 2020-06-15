@@ -68,7 +68,7 @@ class World(ABC):
         Raises:
             NotImplementedError: always
         """
-        raise NotImplementedError("abstractmethod")
+        # can't have pass here for coverage reasons
 
     @abstractmethod
     def render(self):
