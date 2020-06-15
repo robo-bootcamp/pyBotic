@@ -48,8 +48,7 @@ class geometry(ABC):
         """
         if isinstance(arr, np.ndarray):
             return arr.ravel().tolist()
-        else:
-            return arr
+        return arr
 
     @classmethod
     def create_from_iter(cls, arr):
@@ -83,7 +82,6 @@ class point(geometry):
     This will be the parent class of all point objects
     will be used for meta typing and testing moslty
     """
-    pass
 
 
 @dataclass
@@ -93,7 +91,6 @@ class shape(geometry):
     This will be the parent for all nd shape objects
     will be used to metatyping and testing
     """
-    pass
 
 
 @dataclass(frozen=True, unsafe_hash=True)

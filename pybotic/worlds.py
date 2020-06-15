@@ -151,8 +151,6 @@ class Continous3D_Static(World):
 
         renders the world, but currently todo
         """
-        # TODO: write a good 3d render
-        pass
 
     @typechecked
     def update_state(self, new_robot_pose: Point3D) -> None:

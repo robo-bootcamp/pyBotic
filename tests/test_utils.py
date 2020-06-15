@@ -18,7 +18,6 @@ class TestLoad3DWorldMap(unittest.TestCase):
         # testing a valid file loading
         f_name = 'tests/map_files/sample_world.txt'
         boundary, obstacles, _, _ = load_3d_map_from_file(f_name)
-        pass
 
     def test_invalid_file(self):
         # if file not found
