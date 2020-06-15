@@ -4,7 +4,7 @@ import numpy as np
 from typing import Dict
 from typeguard import typechecked, check_type
 
-from pybotic.utils.world_utils import load_3d_world_map
+from pybotic.utils.world_utils import load_3d_map_from_file
 from pybotic.geometry import Point3D, Cuboid, point, shape
 
 
@@ -119,9 +119,9 @@ class Continous3D_Static(World):
         _goal (Point3D): 3d point representing goal/target
     """
     _boundary: Cuboid
-    _obstacles: Dict[str, Cuboid]
-    _start: Point3D
-    _goal: Point3D
+    _obstacles: Dict[str, Cuboid] = field(default_factory={})
+    _start: Point3D = field(default_factory=Point3D(0, 0, 0))
+    _goal: Point3D = field(default_factory=None)
 
     @classmethod
     def create_from_file(cls, f_name: str):
@@ -135,7 +135,7 @@ class Continous3D_Static(World):
         Returns:
             object (Continous3D_Static): object of class
         """
-        boundary, obstacles, start, goal = load_3d_world_map(f_name)
+        boundary, obstacles, start, goal = load_3d_map_from_file(f_name)
         if goal is None:
             goal = Point3D.create_from_iter(np.zeros((3, 1)))
         boundary = Cuboid.create_from_iter(boundary)
