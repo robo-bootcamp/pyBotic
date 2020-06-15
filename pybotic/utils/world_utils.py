@@ -48,34 +48,71 @@ def load_3D_map_from_txt(file_name):
             start: (numpy.ndarray) start location of robot
             goal: (numpy.ndarray) goal location
     """
-    # Read all lines from file
-    with open(file_name) as f:
-        content = f.readlines()
-
     # Key words of interest, to check for repeating arguments
     key_words = {'boundary': 0, 'start': 0, 'goal': 0}
-
+    key_set = set()
     # To create a dictionary of unique obstacles
-    obstacles = set()
+    obstacles = {}
+    # Read all lines from file
+    with open(file_name) as f:
+        for i, line in enumerate(f.readlines()):
+            sl = re.split(': |, |\n| |,', line)[:-1]
+            if sl[0] == "#" or not sl[0]:
+                continue
+            print("sl:", sl)
+            array = str_conversion(sl[1:])
+            print("array:", array)
+            if len(array) == 0:
+                raise SyntaxError("Invalid statement \"{}\"".format(sl[0]))
+            if sl[0] in key_words:
+                if sl[0] not in key_set:
+                    key_set.add(sl[0])
+                    key_words[sl[0]] = str_conversion(sl[1:])
+                elif sl[0] in key_set:
+                    raise ValueError("File has mutiple {} argument".format(sl[0]))
 
-    for i, line in enumerate(content):
-        sl = re.split(' |, |\n', line)[:-1]
-        if sl[0] in key_words:
-            key_words[sl[0]] += 1
-        if sl[0] == "boundary":
-            boundary = str_conversion(sl[1:])
-        elif sl[0] == 'obstacle':
-            obstacles.add(tuple(str_conversion(sl[1:])))
-        elif sl[0] == 'start':
-            start = str_conversion(sl[1:])
-        elif sl[0] == 'goal':
-            goal = str_conversion(sl[1:])
 
-    # Validate key word inputs
-    validate_inputs(key_words)
+    validate_output(key_set, key_words)
     obstacles = get_obstacles_dict(obstacles)
 
-    return boundary, obstacles, start, goal
+    #return boundary, obstacles, start, goal
+
+
+def validate_output(key_set, key_words):
+    if 'boundary' not in key_set and 'goal' not in key_set:
+        raise ValueError("boundary and goal not specified in the file")
+    if 'boundary' not in key_set:
+        raise ValueError("boundary not specified in the file")
+    if 'goal' not in key_set:
+        raise ValueError("goal not specified in the file")
+
+    for key, val in key_words.items():
+        if key == 'boundary':
+            if len(val) != 6:
+                raise ValueError("Invalid {} argument has {} items".format(key, len(val)))
+        if key == 'start' or key == 'goal':
+            if len(val) != 3:
+                raise ValueError("Invalid {} argument".format(key))
+
+
+def str_conversion(arr):
+    """
+        Given a list of strings, convert it to numpy array of int/float
+
+        Args:
+            arr: (list[str]) List of str to be converted
+
+        Returns:
+            numpy.ndarray[int] or numpy.ndarray[float]
+
+        Raises:
+            ValueError if any element is not convertible to int/float
+    """
+    try:
+        return np.array(arr).astype(np.int)
+    except ValueError:
+        return np.array(arr).astype(np.float)
+
 
 
 def get_obstacles_dict(arr):
@@ -115,24 +152,6 @@ def validate_inputs(key_words):
                 raise ValueError("File has mutiple {} argument".format(key))
 
 
-def str_conversion(arr):
-    """
-        Given a list of strings, convert it to numpy array of int/float
-
-        Args:
-            arr: (list[str]) List of str to be converted
-
-        Returns:
-            numpy.ndarray[int] or numpy.ndarray[float]
-
-        Raises:
-            ValueError if any element is not convertible to int/float
-    """
-    try:
-        return np.array(arr).astype(np.int)
-    except ValueError:
-        return np.array(arr).astype(np.float)
-
 
 def load_3D_map_from_json(file_name):
     """
@@ -148,3 +167,15 @@ def load_3D_map_from_json(file_name):
             goal: [numpy.ndarray] goal location
     """
     raise NotImplementedError
+
+
+if __name__ == "__main__":
+    file_name = "/home/gunjan/projects/pyBotic/tests/new_world.txt"
+
+    load_3D_map_from_txt(file_name)
+    """
+    print("b", b)
+    print("o", o)
+    print("s", s)
+    print("g", g)
+    """
