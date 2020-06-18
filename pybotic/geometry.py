@@ -1,5 +1,5 @@
 from dataclasses import dataclass, astuple
-from typing import Union
+from typing import Union, Iterable, Any, Generator
 from abc import ABC
 from typeguard import typechecked, check_type
 import numpy as np
@@ -12,7 +12,7 @@ class geometry(ABC):
     This is actually an abstract class not to be used
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """init
 
         Need to explicitly rewrite since @dataclass overrides ABC
@@ -20,9 +20,11 @@ class geometry(ABC):
         Raises:
             NotImplementedError: always
         """
+        # this is enable static typing
+        self.__annotations__ = {'dummy': None}
         raise NotImplementedError("this is abstaract")
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Validation helper
 
         Enforce Strict Type check for all geometry objects
@@ -33,7 +35,7 @@ class geometry(ABC):
             )
 
     @staticmethod
-    def convert_type(arr):
+    def convert_type(arr: Iterable[Any]) -> Iterable[Union[int, float]]:
         """convert type helper
 
         This is to help deal with annoyance of typechecking numpy
@@ -52,7 +54,7 @@ class geometry(ABC):
         return arr
 
     @classmethod
-    def create_from_iter(cls, arr):
+    def create_from_iter(cls, arr: Iterable[Any]):
         """create from iterable
 
         Creates the class after unpacking and converting iterables
@@ -65,7 +67,7 @@ class geometry(ABC):
         """
         return cls(*cls.convert_type(arr))
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[Union[int, float], None, None]:
         """easy unpacking
 
         This is to support easy unpacking of containers
