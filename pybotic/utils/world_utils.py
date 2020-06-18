@@ -2,9 +2,16 @@ import os
 import re
 import warnings
 import numpy as np
+from typing import Tuple, Dict, Generator, Optional, Union
 
 
-def load_3d_map_from_file(file_name):
+# Custom types
+Map_File_Type = Tuple[
+    np.ndarray, Union[Dict[str, np.ndarray], dict], np.ndarray, Optional[np.ndarray]
+]
+
+
+def load_3d_map_from_file(file_name: str) -> Map_File_Type:
     """map loader from file
 
     given path to file, load 3D world map
@@ -14,7 +21,7 @@ def load_3d_map_from_file(file_name):
 
     Returns:
         boundary (numpy.ndarray, shape=(6,)): physical limits of the world
-        obstacles (numpy.ndarray, shape=(6,)): physical bounds of obstacles
+        obstacles Dict[str, (numpy.ndarray, shape=(6,))]: physical bounds of obstacles
         start (numpy.ndarray, shape=3,)): start location
         goal (numpy.ndarray, shape=(3,)): goal location
 
@@ -27,18 +34,54 @@ def load_3d_map_from_file(file_name):
 
     # Check format
     file_ext = os.path.splitext(file_name)[-1]
-    print(file_ext)
 
     if file_ext not in [".txt"]:
-        raise NotImplementedError(
-            "File format is not supported,\
-                                   give .txt file"
-        )
+        raise NotImplementedError("File format is not supported give .txt file")
 
     return load_3d_map_from_txt(file_name)
 
 
-def load_3d_map_from_txt(file_name):
+def init_pase(f_name: str) -> Generator[Tuple[str, np.ndarray], None, None]:
+    """initial text parser
+
+    given path to txt file, parse to tag, value pair
+
+    Args:
+        file_name (str): Path to .txt file
+
+    Yields:
+        tag (str): keyword tag
+        val (np.ndarray): the value associated with the tag
+
+    Raises:
+
+    """
+    assert isinstance(f_name, str)
+    with open(f_name) as f:
+        for line in f.readlines():
+            line = line.strip("\n")
+            if not line or line[0] == "#":
+                continue
+            try:
+                tag, val = line.split(":")
+                val = np.array(re.split(" ,|,", val)).astype(float)
+            except ValueError:
+                raise SyntaxError("Invalid Syntax")
+            assert isinstance(tag, str)
+            assert isinstance(val, np.ndarray)
+            if tag not in {"boundary", "obstacle", "start", "goal"}:
+                raise SyntaxError("Invalid keyword")
+            if tag in {"boundary", "obstacle"}:
+                if len(val) != 6:
+                    raise ValueError("Invalid Size")
+            else:
+                if len(val) != 3:
+                    raise ValueError("Invalid Size")
+
+            yield tag, val
+
+
+def load_3d_map_from_txt(f_name: str) -> Map_File_Type:
     """map loader from text file
 
     given path to txt file, load 3D world map
@@ -55,131 +98,35 @@ def load_3d_map_from_txt(file_name):
     Raises:
 
     """
-    # Key words dictionary for boundary, start, goal,
-    # to error out for repeating arguments
-    key_words = {}
-    # Set of obstacles to warn for repeating obstacle values
-    obstacles = set()
-    # Read all lines from file
-    with open(file_name) as f:
-        for i, line in enumerate(f.readlines()):
-            sl = re.split(": |, |\n| |,", line)[:-1]
-            word = sl[0]
-            # ignoring comments and empty lines
-            if word == "#" or not word:
-                continue
-            array = str_conversion(sl[1:])
-            # taking care of invalid statements
-            if len(array) == 0:
-                raise SyntaxError('Invalid statement "{}"'.format(word))
-            # taking care of boundary, start, goal and their repetitions
-            if word in ["boundary", "start", "goal"]:
-                if word not in key_words:
-                    key_words[word] = str_conversion(array)
-                else:
-                    raise ValueError(f"File has mutiple {word} keyword")
-            # taking care of obstacles
-            elif word == "obstacle":
-                obstacle = tuple(array)
-                key = "obstacles"
-                # to check and warn for repeating obstacles
-                if obstacle in obstacles:
-                    warnings.warn(f"Repeating obstacle {array}")
-                # check if "obstacles" present in dictionary,
-                # keep track of number of obstacles added to dict,
-                # add obstacle name accordingly
-                if key not in key_words:
-                    key_words[key] = {word + "_0": array}
-                # keep track of number of obstacles added to dict,
-                # add obstacle name accordingly
-                elif key in key_words:
-                    key_words[key][word + "_" + str(len(key_words[key]))] = array
-                obstacles.add(tuple(array))
-            # taking care of invalid key words
+    obstacles = {}
+    unique_obstacles = set()
+    res = {}
+    for tag, val in init_pase(f_name):
+        if tag in {"start", "goal", "boundary"}:
+            if tag not in res:
+                res[tag] = val
             else:
-                raise SyntaxError(
-                    f"Invalid key {word}, not in " "(boundary, obstacles, start, goal)"
-                )
+                raise ValueError("repeating keyword")
+        if tag == "obstacle":
+            obstacles[f"obstacle_{len(obstacles)}"] = val
+            obstacle = tuple(val)
+            if obstacle in unique_obstacles:
+                warnings.warn(f"Repeating obstacle {val}")
+            unique_obstacles.add(obstacle)
 
-    # validating boundary, obstacles, start, goal
-    key_words = validate_output(key_words)
-
-    return (
-        key_words["boundary"],
-        key_words["obstacles"],
-        key_words["start"],
-        key_words["goal"],
-    )
-
-
-def validate_output(key_words):
-    """validating boundary, obstacles, start, goal
-
-    given a dictionary of boundary, obstacles, start, goal with
-    respective arrays, return validated dictionary
-    for existence and array shapes
-
-    Args:
-        key_words (dict{str: numpy.ndarray}): dict of key words to numpy arrays
-
-    Returns:
-        same or updated dictionary
-
-    Raises:
-        ValueError: if boundary, goal or both not found
-        ValueError: if required lengths do not match
-
-    Warnings:
-        RuntimeWarning: if start location is not given
-    """
-    if "boundary" not in key_words:
+    if "boundary" not in res:
         raise KeyError("boundary not specified in the file")
 
-    for key, val in key_words.items():
-        if key == "boundary":
-            if len(val) != 6:
-                raise ValueError(
-                    f"Invalid {key} value, has {len(val)} items," " expected 6"
-                )
-        if key == "start" or key == "goal":
-            if len(val) != 3:
-                raise ValueError(
-                    f"Invalid {key} value, has {len(val)} items", " expected 3"
-                )
-
-    if "start" not in key_words:
+    if "start" not in res:
         warnings.warn("start not given,assuming (0, 0, 0)")
-        key_words["start"] = np.zeros((3))
-
-    if "goal" not in key_words:
-        warnings.warn("goal not given, assuming 'None'")
-        key_words["goal"] = None
-
-    if "obstacles" not in key_words:
-        warnings.warn("no obstacles found")
-        key_words["obstacles"] = {}
+        start = np.zeros((3))
     else:
-        for i, (obs, val) in enumerate(key_words["obstacles"].items()):
-            if len(val) != 6:
-                raise ValueError(
-                    f"Invalid obstacle value," f" has {len(val)} items, " f" expected 6"
-                )
+        start = res["start"]
 
-    return key_words
+    if "goal" not in res:
+        warnings.warn("goal not given, assuming 'None'")
+        goal = None
+    else:
+        goal = res["goal"]
 
-
-def str_conversion(arr):
-    """convert list of str to numpy array
-
-    Given a list of strings, convert it to numpy array of float
-
-    Args:
-        arr (list[str]): List of str to be converted
-
-    Returns:
-        converted numpy.ndarray[float]
-
-    Raises:
-        ValueError: if elements like str/empty are not convertible to float
-    """
-    return np.array(arr).astype(np.float)
+    return res["boundary"], obstacles, start, goal
