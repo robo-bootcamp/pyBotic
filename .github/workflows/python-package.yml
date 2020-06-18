@@ -39,6 +39,10 @@ jobs:
         python setup.py develop
         pip install codecov pytest-cov
         pytest --cov=pybotic/ --cov-report=xml
+    - name: Static testing with pytype
+      run: |
+        pip install pytype
+        pytype pybotic/*
     - name: Codecov
       uses: codecov/codecov-action@v1.0.7
       with:
