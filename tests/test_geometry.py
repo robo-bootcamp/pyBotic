@@ -1,10 +1,4 @@
-from pybotic.geometry import (
-    geometry,
-    Point2D,
-    Point3D,
-    Rectangle,
-    Cuboid
-)
+from pybotic.geometry import geometry, Point2D, Point3D, Rectangle, Cuboid
 import unittest
 import numpy as np
 
@@ -59,9 +53,10 @@ class TestGeometry(unittest.TestCase):
         self.valid_functionality_points(Rectangle, valid_test_inputs)
 
         # test creation from points
-        rectanges = [Rectangle.create_from_points(
-            Point2D(*input_[:2]), Point2D(*input_[2:]))
-            for input_ in valid_test_inputs]
+        rectanges = [
+            Rectangle.create_from_points(Point2D(*input_[:2]), Point2D(*input_[2:]))
+            for input_ in valid_test_inputs
+        ]
 
         # test unpacking works propely
         for point, inp in zip(rectanges, valid_test_inputs):
@@ -74,15 +69,18 @@ class TestGeometry(unittest.TestCase):
         when created with valid inputs
         """
         # multiple valid inputs
-        valid_test_inputs = [(1, 2, 3, 4, 5, 6),
-                             (1.0, 2.0, 3, 4, 5.0, 6),
-                             (1.0, 2.0, 3, 4.0, 5, 6.0)]
+        valid_test_inputs = [
+            (1, 2, 3, 4, 5, 6),
+            (1.0, 2.0, 3, 4, 5.0, 6),
+            (1.0, 2.0, 3, 4.0, 5, 6.0),
+        ]
         self.valid_functionality_points(Cuboid, valid_test_inputs)
 
         # test creation from points
-        cuboids = [Cuboid.create_from_points(
-            Point3D(*input_[:3]), Point3D(*input_[3:]))
-            for input_ in valid_test_inputs]
+        cuboids = [
+            Cuboid.create_from_points(Point3D(*input_[:3]), Point3D(*input_[3:]))
+            for input_ in valid_test_inputs
+        ]
 
         # test unpacking works propely
         for point, inp in zip(cuboids, valid_test_inputs):
@@ -110,24 +108,25 @@ class TestGeometry(unittest.TestCase):
             self.assertEqual(tuple(point), inp)
 
         # tuple init
-        objects = [class_method.create_from_iter(input_)
-                   for input_ in test_inputs]
+        objects = [class_method.create_from_iter(input_) for input_ in test_inputs]
 
         # test unpacking works properly
         for point, inp in zip(objects, test_inputs):
             self.assertEqual(tuple(point), inp)
 
         # list init
-        objects = [class_method.create_from_iter(list(input_))
-                   for input_ in test_inputs]
+        objects = [
+            class_method.create_from_iter(list(input_)) for input_ in test_inputs
+        ]
 
         # test unpacking works properly
         for point, inp in zip(objects, test_inputs):
             self.assertEqual(tuple(point), inp)
 
         # numpy init
-        objects = [class_method.create_from_iter(np.array(input_))
-                   for input_ in test_inputs]
+        objects = [
+            class_method.create_from_iter(np.array(input_)) for input_ in test_inputs
+        ]
 
         # test unpacking works properly
         for point, inp in zip(objects, test_inputs):

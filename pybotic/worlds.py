@@ -27,6 +27,7 @@ class World(ABC):
         _start (point): nd point representing start
         _goal (point): nd point representing goal/target
     """
+
     _boundary: shape = field(default=None)
     _obstacles: Dict[str, shape] = field(default=None)
     _start: point = field(default=None)
@@ -41,8 +42,9 @@ class World(ABC):
         self._robot_pose = self._start
 
         for (name, field_type) in self.__annotations__.items():
-            check_type(argname=name, value=self.__dict__[name],
-                       expected_type=field_type)
+            check_type(
+                argname=name, value=self.__dict__[name], expected_type=field_type
+            )
 
     def get_state(self):
         """Get World State
@@ -118,6 +120,7 @@ class Continous3D_Static(World):
         _start (Point3D): 3D point representing start
         _goal (Point3D): 3d point representing goal/target
     """
+
     _boundary: Cuboid
     _obstacles: Dict[str, Cuboid] = field(default_factory={})
     _start: Point3D = field(default_factory=Point3D(0, 0, 0))
@@ -137,8 +140,7 @@ class Continous3D_Static(World):
         """
         boundary, obstacles, start, goal = load_3d_map_from_file(f_name)
 
-        goal = Point3D.create_from_iter(np.zeros((3, 1))
-                                        if goal is None else goal)
+        goal = Point3D.create_from_iter(np.zeros((3, 1)) if goal is None else goal)
         boundary = Cuboid.create_from_iter(boundary)
         start = Point3D.create_from_iter(start)
         for obstacle in obstacles:

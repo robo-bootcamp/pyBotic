@@ -29,9 +29,11 @@ def load_3d_map_from_file(file_name):
     file_ext = os.path.splitext(file_name)[-1]
     print(file_ext)
 
-    if file_ext not in ['.txt']:
-        raise NotImplementedError("File format is not supported,\
-                                   give .txt file")
+    if file_ext not in [".txt"]:
+        raise NotImplementedError(
+            "File format is not supported,\
+                                   give .txt file"
+        )
 
     return load_3d_map_from_txt(file_name)
 
@@ -61,7 +63,7 @@ def load_3d_map_from_txt(file_name):
     # Read all lines from file
     with open(file_name) as f:
         for i, line in enumerate(f.readlines()):
-            sl = re.split(': |, |\n| |,', line)[:-1]
+            sl = re.split(": |, |\n| |,", line)[:-1]
             word = sl[0]
             # ignoring comments and empty lines
             if word == "#" or not word:
@@ -69,7 +71,7 @@ def load_3d_map_from_txt(file_name):
             array = str_conversion(sl[1:])
             # taking care of invalid statements
             if len(array) == 0:
-                raise SyntaxError("Invalid statement \"{}\"".format(word))
+                raise SyntaxError('Invalid statement "{}"'.format(word))
             # taking care of boundary, start, goal and their repetitions
             if word in ["boundary", "start", "goal"]:
                 if word not in key_words:
@@ -87,22 +89,27 @@ def load_3d_map_from_txt(file_name):
                 # keep track of number of obstacles added to dict,
                 # add obstacle name accordingly
                 if key not in key_words:
-                    key_words[key] = {word+'_0': array}
+                    key_words[key] = {word + "_0": array}
                 # keep track of number of obstacles added to dict,
                 # add obstacle name accordingly
                 elif key in key_words:
-                    key_words[key][word+'_'+str(len(key_words[key]))] = array
+                    key_words[key][word + "_" + str(len(key_words[key]))] = array
                 obstacles.add(tuple(array))
             # taking care of invalid key words
             else:
-                raise SyntaxError(f"Invalid key {word}, not in "
-                                  "(boundary, obstacles, start, goal)")
+                raise SyntaxError(
+                    f"Invalid key {word}, not in " "(boundary, obstacles, start, goal)"
+                )
 
     # validating boundary, obstacles, start, goal
     key_words = validate_output(key_words)
 
-    return (key_words['boundary'], key_words["obstacles"],
-            key_words['start'], key_words['goal'])
+    return (
+        key_words["boundary"],
+        key_words["obstacles"],
+        key_words["start"],
+        key_words["goal"],
+    )
 
 
 def validate_output(key_words):
@@ -125,18 +132,20 @@ def validate_output(key_words):
     Warnings:
         RuntimeWarning: if start location is not given
     """
-    if 'boundary' not in key_words:
+    if "boundary" not in key_words:
         raise KeyError("boundary not specified in the file")
 
     for key, val in key_words.items():
-        if key == 'boundary':
+        if key == "boundary":
             if len(val) != 6:
-                raise ValueError(f"Invalid {key} value, has {len(val)} items,"
-                                 " expected 6")
-        if key == 'start' or key == 'goal':
+                raise ValueError(
+                    f"Invalid {key} value, has {len(val)} items," " expected 6"
+                )
+        if key == "start" or key == "goal":
             if len(val) != 3:
-                raise ValueError(f"Invalid {key} value, has {len(val)} items",
-                                 " expected 3")
+                raise ValueError(
+                    f"Invalid {key} value, has {len(val)} items", " expected 3"
+                )
 
     if "start" not in key_words:
         warnings.warn("start not given,assuming (0, 0, 0)")
@@ -152,9 +161,9 @@ def validate_output(key_words):
     else:
         for i, (obs, val) in enumerate(key_words["obstacles"].items()):
             if len(val) != 6:
-                raise ValueError(f"Invalid obstacle value,"
-                                 f" has {len(val)} items, "
-                                 f" expected 6")
+                raise ValueError(
+                    f"Invalid obstacle value," f" has {len(val)} items, " f" expected 6"
+                )
 
     return key_words
 

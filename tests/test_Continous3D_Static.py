@@ -26,12 +26,13 @@ class TestContinous3DStatic(unittest.TestCase):
             -
         """
         self.boundary = Cuboid.create_from_iter([1, 2, 3, 4, 5, 6])
-        self.obstacles = {'1': Cuboid.create_from_iter([1]*6)}
+        self.obstacles = {"1": Cuboid.create_from_iter([1] * 6)}
         self.start = Point3D.create_from_iter(np.zeros((3, 1)))
         self.goal = Point3D.create_from_iter(np.ones((3, 1)))
-        self.cworld = Continous3D_Static(self.boundary, self.obstacles,
-                                         self.start, self.goal)
-        self.file_path = 'tests/map_files/'
+        self.cworld = Continous3D_Static(
+            self.boundary, self.obstacles, self.start, self.goal
+        )
+        self.file_path = "tests/map_files/"
 
     def test_valid(self):
         """Test under valid inputs
@@ -44,11 +45,13 @@ class TestContinous3DStatic(unittest.TestCase):
         # valid construction
         self.assertIsInstance(self.cworld, Continous3D_Static)
 
-        valid_output = {'boundary': self.boundary,
-                        'obstacles': self.obstacles,
-                        'start': self.start,
-                        'goal': self.goal,
-                        'robot_pose': self.start}
+        valid_output = {
+            "boundary": self.boundary,
+            "obstacles": self.obstacles,
+            "start": self.start,
+            "goal": self.goal,
+            "robot_pose": self.start,
+        }
 
         self.assertEqual(self.cworld(), valid_output)
 
@@ -81,4 +84,4 @@ class TestContinous3DStatic(unittest.TestCase):
 
     # tests valid file loading
     def test_load_3d_map_from_file(self):
-        Continous3D_Static.create_from_file(self.file_path+'sample_world.txt')
+        Continous3D_Static.create_from_file(self.file_path + "sample_world.txt")

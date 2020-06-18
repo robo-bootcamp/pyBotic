@@ -28,8 +28,9 @@ class geometry(ABC):
         Enforce Strict Type check for all geometry objects
         """
         for (name, field_type) in self.__annotations__.items():
-            check_type(argname=name, value=self.__dict__[name],
-                       expected_type=field_type)
+            check_type(
+                argname=name, value=self.__dict__[name], expected_type=field_type
+            )
 
     @staticmethod
     def convert_type(arr):
@@ -104,6 +105,7 @@ class Point3D(point):
         y (Union[float,int]): y-coordinate of the point
         z (Union[float,int]): z-coordinate of the point
     """
+
     x: Union[float, int]
     y: Union[float, int]
     z: Union[float, int]
@@ -119,6 +121,7 @@ class Point2D(point):
         x (Union[float,int]): x-coordinate of the point
         y (Union[float,int]): y-coordinate of the point
     """
+
     x: Union[float, int]
     y: Union[float, int]
 
@@ -137,6 +140,7 @@ class Cuboid(shape):
         y_max (Union[float,int]): y-coordinate of the max point
         z_max (Union[float,int]): z-coordinate of the max point
     """
+
     x_min: Union[float, int]
     y_min: Union[float, int]
     z_min: Union[float, int]
@@ -168,6 +172,7 @@ class Rectangle(shape):
         x_max (Union[float,int]): x-coordinate of the max point
         y_max (Union[float,int]): y-coordinate of the max point
     """
+
     x_min: Union[float, int]
     y_min: Union[float, int]
     x_max: Union[float, int]
