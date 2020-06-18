@@ -16,7 +16,7 @@ class TestLoad3DWorldMap(unittest.TestCase):
 
     def test_valid_load(self):
         # testing a valid file loading
-        f_name = 'tests/map_files/sample_world.txt'
+        f_name = "tests/map_files/sample_world.txt"
         boundary, obstacles, _, _ = load_3d_map_from_file(f_name)
 
     def test_invalid_file(self):
@@ -32,10 +32,10 @@ class TestLoad3DWorldMap(unittest.TestCase):
     def test_invalid_syntax(self):
         # wrong key "asdfjkjlfskd: 1, 2, 3, 4, 5, 6"
         with self.assertRaises(SyntaxError):
-            load_3d_map_from_file(self.path + 'syntax_err1.txt')
+            load_3d_map_from_file(self.path + "syntax_err1.txt")
         # random txt "ajlkflkfsdajlkf:"
         with self.assertRaises(SyntaxError):
-            load_3d_map_from_file(self.path + 'syntax_err2.txt')
+            load_3d_map_from_file(self.path + "syntax_err2.txt")
 
     def test_value_errors(self):
         # repeating keyword
@@ -56,7 +56,7 @@ class TestLoad3DWorldMap(unittest.TestCase):
         # if any of the shapes don't match expected shape raise ValueError
         for file in range(1, 4):
             with self.assertRaises(ValueError):
-                load_3d_map_from_file(self.path + f'shape_error{file}.txt')
+                load_3d_map_from_file(self.path + f"shape_error{file}.txt")
 
     def test_keyword_missing(self):
         # if any of the keywords are missing raise a warning

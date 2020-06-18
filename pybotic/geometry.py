@@ -1,5 +1,5 @@
 from dataclasses import dataclass, astuple
-from typing import Union
+from typing import Union, Iterable, Any, Generator
 from abc import ABC
 from typeguard import typechecked, check_type
 import numpy as np
@@ -12,7 +12,7 @@ class geometry(ABC):
     This is actually an abstract class not to be used
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """init
 
         Need to explicitly rewrite since @dataclass overrides ABC
@@ -20,19 +20,22 @@ class geometry(ABC):
         Raises:
             NotImplementedError: always
         """
+        # this is enable static typing
+        self.__annotations__ = {'dummy': None}
         raise NotImplementedError("this is abstaract")
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Validation helper
 
         Enforce Strict Type check for all geometry objects
         """
         for (name, field_type) in self.__annotations__.items():
-            check_type(argname=name, value=self.__dict__[name],
-                       expected_type=field_type)
+            check_type(
+                argname=name, value=self.__dict__[name], expected_type=field_type
+            )
 
     @staticmethod
-    def convert_type(arr):
+    def convert_type(arr: Iterable[Any]) -> Iterable[Union[int, float]]:
         """convert type helper
 
         This is to help deal with annoyance of typechecking numpy
@@ -51,7 +54,7 @@ class geometry(ABC):
         return arr
 
     @classmethod
-    def create_from_iter(cls, arr):
+    def create_from_iter(cls, arr: Iterable[Any]):
         """create from iterable
 
         Creates the class after unpacking and converting iterables
@@ -64,7 +67,7 @@ class geometry(ABC):
         """
         return cls(*cls.convert_type(arr))
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[Union[int, float], None, None]:
         """easy unpacking
 
         This is to support easy unpacking of containers
@@ -104,6 +107,7 @@ class Point3D(point):
         y (Union[float,int]): y-coordinate of the point
         z (Union[float,int]): z-coordinate of the point
     """
+
     x: Union[float, int]
     y: Union[float, int]
     z: Union[float, int]
@@ -119,6 +123,7 @@ class Point2D(point):
         x (Union[float,int]): x-coordinate of the point
         y (Union[float,int]): y-coordinate of the point
     """
+
     x: Union[float, int]
     y: Union[float, int]
 
@@ -137,6 +142,7 @@ class Cuboid(shape):
         y_max (Union[float,int]): y-coordinate of the max point
         z_max (Union[float,int]): z-coordinate of the max point
     """
+
     x_min: Union[float, int]
     y_min: Union[float, int]
     z_min: Union[float, int]
@@ -168,6 +174,7 @@ class Rectangle(shape):
         x_max (Union[float,int]): x-coordinate of the max point
         y_max (Union[float,int]): y-coordinate of the max point
     """
+
     x_min: Union[float, int]
     y_min: Union[float, int]
     x_max: Union[float, int]
