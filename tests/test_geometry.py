@@ -1,6 +1,7 @@
 from pybotic.geometry import geometry, Point2D, Point3D, Rectangle, Cuboid
 import unittest
 import numpy as np
+from typing import List, Tuple, Union
 
 
 class TestGeometry(unittest.TestCase):
@@ -12,7 +13,7 @@ class TestGeometry(unittest.TestCase):
     please look at individual tests to see all features tested
     """
 
-    def test_abstract_geometry(self):
+    def test_abstract_geometry(self) -> None:
         """Abstract object creation test
 
         make sure that obj of geometry can't be created
@@ -22,7 +23,7 @@ class TestGeometry(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             geometry()
 
-    def test_valid_point2d(self):
+    def test_valid_point2d(self) -> None:
         """Test Point2D behavior when created using valid inputs
 
         function will test all behaviors of Point2D object
@@ -32,7 +33,7 @@ class TestGeometry(unittest.TestCase):
         valid_test_inputs = [(1, 2), (1.0, 2), (1.0, 2.0)]
         self.valid_functionality_points(Point2D, valid_test_inputs)
 
-    def test_valid_point3d(self):
+    def test_valid_point3d(self) -> None:
         """Test Point3D behavior when created using valid inputs
 
         function will test all behaviors of Point3D object
@@ -42,7 +43,7 @@ class TestGeometry(unittest.TestCase):
         valid_test_inputs = [(1, 2, 3), (1.0, 2, 3), (1.0, 2.0, 3)]
         self.valid_functionality_points(Point3D, valid_test_inputs)
 
-    def test_rectangles(self):
+    def test_rectangles(self) -> None:
         """Test Rectangle behavior when created using valid inputs
 
         function will test all behaviors of Rectangle object
@@ -62,7 +63,7 @@ class TestGeometry(unittest.TestCase):
         for point, inp in zip(rectanges, valid_test_inputs):
             self.assertEqual(tuple(point), inp)
 
-    def test_cuboid(self):
+    def test_cuboid(self) -> None:
         """Test Cuboid behavior when created using valid inputs
 
         function will test all behaviors of Cuboid object
@@ -86,7 +87,9 @@ class TestGeometry(unittest.TestCase):
         for point, inp in zip(cuboids, valid_test_inputs):
             self.assertEqual(tuple(point), inp)
 
-    def valid_functionality_points(self, class_method, test_inputs):
+    def valid_functionality_points(
+        self, class_method: geometry, test_inputs: List[List[Union[float, int]]]
+    ) -> None:
         """Set of tests to run to verify behavior to valid inputs
 
         This is a function that will be used by other tests to

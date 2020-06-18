@@ -13,7 +13,7 @@ class TestContinous3DStatic(unittest.TestCase):
         - file not found
     """
 
-    def setUp(self):
+    def setUp(self) -> None:
         """initializes test object
 
         equivalent of __init__()
@@ -34,7 +34,7 @@ class TestContinous3DStatic(unittest.TestCase):
         )
         self.file_path = "tests/map_files/"
 
-    def test_valid(self):
+    def test_valid(self) -> None:
         """Test under valid inputs
 
         this is will check valid cases
@@ -58,7 +58,7 @@ class TestContinous3DStatic(unittest.TestCase):
         # support empty obstacles
         Continous3D_Static(self.boundary, {}, self.start, self.goal)
 
-    def test_empty(self):
+    def test_empty(self) -> None:
         """Empty check
 
         Tries to create an object with empty inputs
@@ -67,7 +67,7 @@ class TestContinous3DStatic(unittest.TestCase):
         with self.assertRaises(TypeError):
             Continous3D_Static()
 
-    def test_update(self):
+    def test_update(self) -> None:
         """Update state check
 
         Make sure that update state works properly
@@ -75,7 +75,7 @@ class TestContinous3DStatic(unittest.TestCase):
         self.cworld.update_state(self.goal)
         self.assertEqual(self.goal, self.cworld._robot_pose)
 
-    def test_render(self):
+    def test_render(self) -> None:
         """test the rendering engine
 
         Currely a dummy test need to write the renderer first
@@ -83,5 +83,5 @@ class TestContinous3DStatic(unittest.TestCase):
         self.cworld.render()
 
     # tests valid file loading
-    def test_load_3d_map_from_file(self):
+    def test_load_3d_map_from_file(self) -> None:
         Continous3D_Static.create_from_file(self.file_path + "sample_world.txt")
