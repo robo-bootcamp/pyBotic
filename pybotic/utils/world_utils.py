@@ -41,7 +41,7 @@ def load_3d_map_from_file(file_name: str) -> Map_File_Type:
     return load_3d_map_from_txt(file_name)
 
 
-def init_pase(f_name: str) -> Generator[Tuple[str, np.ndarray], None, None]:
+def init_parse(f_name: str) -> Generator[Tuple[str, np.ndarray], None, None]:
     """initial text parser
 
     given path to txt file, parse to tag, value pair
@@ -69,6 +69,7 @@ def init_pase(f_name: str) -> Generator[Tuple[str, np.ndarray], None, None]:
                 raise SyntaxError("Invalid Syntax")
             assert isinstance(tag, str)
             assert isinstance(val, np.ndarray)
+
             if tag not in {"boundary", "obstacle", "start", "goal"}:
                 raise SyntaxError("Invalid keyword")
             if tag in {"boundary", "obstacle"}:
@@ -101,13 +102,13 @@ def load_3d_map_from_txt(f_name: str) -> Map_File_Type:
     obstacles = {}
     unique_obstacles = set()
     res = {}
-    for tag, val in init_pase(f_name):
+    for tag, val in init_parse(f_name):
         if tag in {"start", "goal", "boundary"}:
             if tag not in res:
                 res[tag] = val
             else:
                 raise ValueError("repeating keyword")
-        if tag == "obstacle":
+        else:  # if tag == "obstacle":
             obstacles[f"obstacle_{len(obstacles)}"] = val
             obstacle = tuple(val)
             if obstacle in unique_obstacles:
