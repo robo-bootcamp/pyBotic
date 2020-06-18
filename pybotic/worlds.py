@@ -1,11 +1,19 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 import numpy as np
-from typing import Dict
+from typing import Dict, Optional
 from typeguard import typechecked, check_type
 
 from pybotic.utils.world_utils import load_3d_map_from_file
 from pybotic.geometry import Point3D, Cuboid, point, shape
+
+
+def obstacle_creator() -> Dict[str, Cuboid]:
+    return {}
+
+
+def point_creator() -> Point3D:
+    return Point3D(0, 0, 0)
 
 
 @dataclass
@@ -28,12 +36,12 @@ class World(ABC):
         _goal (point): nd point representing goal/target
     """
 
-    _boundary: shape = field(default=None)
-    _obstacles: Dict[str, shape] = field(default=None)
-    _start: point = field(default=None)
-    _goal: point = field(default=None)
+    _boundary: Optional[shape] = field(default=None)
+    _obstacles: Optional[Dict[str, shape]] = field(default=None)
+    _start: Optional[point] = field(default=None)
+    _goal: Optional[point] = field(default=None)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Validate inputs
 
         This is used to validate the inputs
@@ -72,7 +80,7 @@ class World(ABC):
         return self.get_state()
 
     @abstractmethod
-    def update_state(self, new_robot_pose):
+    def update_state(self, new_robot_pose: point) -> None:
         """Update the state of the world
 
         Args:
@@ -84,7 +92,7 @@ class World(ABC):
         # can't have pass here for coverage reasons
 
     @abstractmethod
-    def render(self):
+    def render(self) -> None:
         """Renders the world
 
         renders the world, but currently abstarct
@@ -122,9 +130,9 @@ class Continous3D_Static(World):
     """
 
     _boundary: Cuboid
-    _obstacles: Dict[str, Cuboid] = field(default_factory={})
-    _start: Point3D = field(default_factory=Point3D(0, 0, 0))
-    _goal: Point3D = field(default_factory=None)
+    _obstacles: Dict[str, Cuboid] = field(default_factory=obstacle_creator)  # ok
+    _start: Point3D = field(default_factory=point_creator)  # ok
+    _goal: Point3D = field(default_factory=point_creator)
 
     @classmethod
     def create_from_file(cls, f_name: str):
@@ -148,7 +156,7 @@ class Continous3D_Static(World):
 
         return cls(boundary, obstacles, start, goal)
 
-    def render(self):
+    def render(self) -> None:
         """Renders the world
 
         renders the world, but currently todo
