@@ -6,10 +6,6 @@ Impelementations of famous robotics algorithms, This will mostly be used for tea
 This was heavily inspired from 
 https://github.com/AtsushiSakai/PythonRobotics
 
-
-
-This project was inspired from 
-
 ## Projects Planned
 
 ### Planners
